@@ -6,7 +6,7 @@ program = r"""
 #pragma clang diagnostic ignored "-Wint-conversion"
 BPF_PROG_ARRAY(syscall, 300);
 
-int hello(struct bpf_raw_tracepoint_args *ctx) {
+RAW_TRACEPOINT_PROBE(sys_enter) {
     int opcode = ctx->args[1];
     syscall.call(ctx, opcode);
     bpf_trace_printk("Another syscall: %d", opcode);
@@ -40,7 +40,7 @@ int ignore_opcode(void *ctx) {
 """
 
 b = BPF(text=program)
-b.attach_raw_tracepoint(tp="sys_enter", fn_name="hello")
+#b.attach_raw_tracepoint(tp="sys_enter", fn_name="hello")
 
 ignore_fn = b.load_func("ignore_opcode", BPF.RAW_TRACEPOINT)
 exec_fn = b.load_func("hello_exec", BPF.RAW_TRACEPOINT)
