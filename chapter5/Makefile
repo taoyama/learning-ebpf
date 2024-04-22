@@ -5,7 +5,7 @@ BPF_OBJ = ${TARGET:=.bpf.o}
 USER_C = ${TARGET:=.c}
 USER_SKEL = ${TARGET:=.skel.h}
 
-all: $(TARGET) $(BPF_OBJ) find-map
+all: $(TARGET) $(BPF_OBJ) find-map vmlinux.h
 .PHONY: all 
 
 $(TARGET): $(USER_C) $(USER_SKEL) 
@@ -26,9 +26,10 @@ vmlinux.h:
 	bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
 
 clean:
-	- rm $(BPF_OBJ)
-	- rm $(TARGET)
-	- rm find-map
+	- rm -f $(BPF_OBJ)
+	- rm -f $(TARGET)
+	- rm -f find-map
+	- rm -f vmlinux.h
 
 find-map: find-map.c
 	gcc -Wall -o find-map find-map.c -L../libbpf/src -l:libbpf.a -lelf -lz
